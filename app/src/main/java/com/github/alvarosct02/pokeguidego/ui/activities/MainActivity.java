@@ -16,6 +16,7 @@ import com.github.alvarosct02.pokeguidego.R;
 import com.github.alvarosct02.pokeguidego.models.Submission;
 import com.github.alvarosct02.pokeguidego.models.SubmissionBody;
 import com.github.alvarosct02.pokeguidego.retrofit.RequestManager;
+import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
@@ -156,6 +157,9 @@ public class MainActivity extends FragmentActivity implements OnMapReadyCallback
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
                 == PackageManager.PERMISSION_GRANTED) {
             mMap.setMyLocationEnabled(true);
+
+            mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(new LatLng(-12.123563, -77.029412),17));
+
 
             mMap.setOnMyLocationButtonClickListener(new GoogleMap.OnMyLocationButtonClickListener() {
                 @Override
