@@ -1,4 +1,4 @@
-package com.github.alvarosct02.pokeguidego;
+package com.github.alvarosct02.pokeguidego.ui.activities;
 
 import android.Manifest;
 import android.content.pm.PackageManager;
@@ -7,17 +7,18 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
 import android.os.Bundle;
 import android.support.v4.content.ContextCompat;
+import android.support.v7.widget.Toolbar;
 import android.view.View;
-import android.widget.Button;
 import android.widget.Toast;
 
+import com.github.alvarosct02.pokeguidego.R;
 import com.github.alvarosct02.pokeguidego.models.Submission;
 import com.github.alvarosct02.pokeguidego.models.SubmissionBody;
 import com.github.alvarosct02.pokeguidego.retrofit.RequestManager;
-import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.MarkerOptions;
@@ -25,9 +26,6 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import java.util.List;
 import java.util.Locale;
 
-import butterknife.BindView;
-import butterknife.ButterKnife;
-import butterknife.OnClick;
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
@@ -37,6 +35,8 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
     private GoogleMap mMap;
     private SupportMapFragment mapFragment;
     private FloatingActionButton fab_location, fab_search;
+    private View v_progress;
+    private Toolbar toolbar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,6 +49,10 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
         fab_location = (FloatingActionButton) findViewById(R.id.fab_location);
         fab_search = (FloatingActionButton) findViewById(R.id.fab_search);
+        v_progress = findViewById(R.id.v_progress);
+        toolbar = (Toolbar) findViewById(R.id.toolbar);
+        toolbar.setTitle("TK Pokemap");
+
 
 
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
@@ -94,8 +98,13 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         }
     }
 
+    private void setLoading(boolean loading) {
+        fab_location.setEnabled(!loading);
+        v_progress.setVisibility(loading ? View.VISIBLE : View.GONE);
+    }
 
     private void findPokemons(LatLng min, LatLng max) {
+
         Call<SubmissionBody> getPokemons =
                 RequestManager.getWebServices().getSubmissions(
                         "8833e1905bf711e6bdb23f74a6aceeb0",
@@ -105,31 +114,40 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                         max.longitude,
                         0);
 
+        setLoading(true);
         getPokemons.enqueue(new Callback<SubmissionBody>() {
             @Override
             public void onResponse(Call<SubmissionBody> call, Response<SubmissionBody> response) {
 
+                setLoading(false);
+                if (mMap == null) return;
+
+                mMap.clear();
+
                 List<Submission> pokemons = response.body().getVerifiedResults();
-                Toast.makeText(MapsActivity.this, String.format(Locale.US, "%d pokemons found", pokemons.size()), Toast.LENGTH_SHORT).show();
+
+                for (Submission pokemon : pokemons) {
+                    int icon = getResources().getIdentifier(String.format("drawable/pokemon_%d", pokemon.getPokemonId()), null, getPackageName());
+                    mMap.addMarker(new MarkerOptions()
+                            .position(pokemon.getLatLng())
+                            .title(pokemon.getLabel())
+                            .anchor(0.5f, 0.5f)
+                            .icon(BitmapDescriptorFactory.fromResource(icon)));
+                }
+
+
+//                Toast.makeText(MapsActivity.this, String.format(Locale.US, "%d pokemons found", pokemons.size()), Toast.LENGTH_SHORT).show();
 
             }
 
             @Override
             public void onFailure(Call<SubmissionBody> call, Throwable t) {
-                Toast.makeText(MapsActivity.this, "onFailure", Toast.LENGTH_SHORT).show();
+                setLoading(false);
+                Toast.makeText(MapsActivity.this, "Something went wrong, Try again.", Toast.LENGTH_SHORT).show();
             }
         });
     }
 
-    /**
-     * Manipulates the map once available.
-     * This callback is triggered when the map is ready to be used.
-     * This is where we can add markers or lines, add listeners or move the camera. In this case,
-     * we just add a marker near Sydney, Australia.
-     * If Google Play services is not installed on the device, the user will be prompted to install
-     * it inside the SupportMapFragment. This method will only be triggered once the user has
-     * installed Google Play services and returned to the app.
-     */
     @Override
     public void onMapReady(GoogleMap googleMap) {
         mMap = googleMap;
@@ -161,14 +179,14 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         }
     }
 
-    public void onClickSearch(){
+    public void onClickSearch() {
         if (mMap != null) {
             LatLngBounds bounds = mMap.getProjection().getVisibleRegion().latLngBounds;
             findPokemons(bounds.southwest, bounds.northeast);
         }
     }
 
-    public void onClickMyLocation(){
+    public void onClickMyLocation() {
         if (mMap != null) {
             View myLocationButton = ((View) mapFragment.getView().findViewById(Integer.parseInt("1")).getParent())
                     .findViewById(Integer.parseInt("2"));

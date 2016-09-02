@@ -1,7 +1,5 @@
 package com.github.alvarosct02.pokeguidego.models;
 
-import com.google.gson.JsonObject;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -27,7 +25,7 @@ public class SubmissionBody {
                 }
             }
         }
-        return data;
+        return filteredData;
     }
 
     public void setData(List<Submission> data) {

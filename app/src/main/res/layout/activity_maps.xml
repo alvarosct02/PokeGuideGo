@@ -26,7 +26,14 @@
         android:name="com.google.android.gms.maps.SupportMapFragment"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        tools:context="com.github.alvarosct02.pokeguidego.MapsActivity" />
+        tools:context=".ui.activities.MapsActivity" />
+
+    <ProgressBar
+        android:id="@+id/v_progress"
+        android:visibility="gone"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center" />
 
 
     <android.support.design.widget.FloatingActionButton

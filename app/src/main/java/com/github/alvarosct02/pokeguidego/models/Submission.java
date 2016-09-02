@@ -1,14 +1,20 @@
 package com.github.alvarosct02.pokeguidego.models;
 
+import com.github.alvarosct02.pokeguidego.utils.UtilMethods;
+import com.google.android.gms.maps.model.LatLng;
+
+import java.util.Calendar;
+import java.util.GregorianCalendar;
+
 /**
  * Created by Alvaro on 8/21/2016.
  */
 public class Submission {
     private static final String POKE_RADAR_PREDICTION = "13661365";
 
-    private int created;
-    private float latitude;
-    private float longitude;
+    private long created;
+    private double latitude;
+    private double longitude;
     private int pokemonId;
     private String userId;
 
@@ -17,15 +23,16 @@ public class Submission {
     private String trainerName;
     private String deviceId;
 
-    public int getCreated() {
-        return created;
+    public long getCreated(){
+        return created * 1000;
     }
 
-    public float getLatitude() {
+
+    public double getLatitude() {
         return latitude;
     }
 
-    public float getLongitude() {
+    public double getLongitude() {
         return longitude;
     }
 
@@ -39,5 +46,20 @@ public class Submission {
 
     public boolean isVerified(){
         return getUserId().equals(POKE_RADAR_PREDICTION);
+    }
+
+    public Calendar getEndTime() {
+        Calendar c = Calendar.getInstance();
+        c.setTimeInMillis(getCreated());
+        c.add(Calendar.MINUTE,15);
+        return c;
+    }
+
+    public String getLabel(){
+        return String.format("Until %s", UtilMethods.getDateString(getEndTime(), "HH:mm"));
+    }
+
+    public LatLng getLatLng(){
+        return new LatLng(getLatitude(), getLongitude());
     }
 }
