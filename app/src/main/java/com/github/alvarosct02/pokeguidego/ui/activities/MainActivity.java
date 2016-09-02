@@ -2,6 +2,7 @@ package com.github.alvarosct02.pokeguidego.ui.activities;
 
 import android.Manifest;
 import android.content.pm.PackageManager;
+import android.graphics.Color;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.FragmentActivity;
@@ -24,13 +25,12 @@ import com.google.android.gms.maps.model.LatLngBounds;
 import com.google.android.gms.maps.model.MarkerOptions;
 
 import java.util.List;
-import java.util.Locale;
 
 import retrofit2.Call;
 import retrofit2.Callback;
 import retrofit2.Response;
 
-public class MapsActivity extends FragmentActivity implements OnMapReadyCallback {
+public class MainActivity extends FragmentActivity implements OnMapReadyCallback {
 
     private GoogleMap mMap;
     private SupportMapFragment mapFragment;
@@ -52,13 +52,14 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
         v_progress = findViewById(R.id.v_progress);
         toolbar = (Toolbar) findViewById(R.id.toolbar);
         toolbar.setTitle("TK Pokemap");
+        toolbar.setTitleTextColor(Color.WHITE);
 
 
 
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.ACCESS_FINE_LOCATION)
                 == PackageManager.PERMISSION_GRANTED) {
 
-            if (ActivityCompat.shouldShowRequestPermissionRationale(MapsActivity.this,
+            if (ActivityCompat.shouldShowRequestPermissionRationale(MainActivity.this,
                     Manifest.permission.ACCESS_FINE_LOCATION)) {
 
                 // Show an expanation to the user *asynchronously* -- don't block
@@ -69,7 +70,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
 
                 // No explanation needed, we can request the permission.
 
-                ActivityCompat.requestPermissions(MapsActivity.this,
+                ActivityCompat.requestPermissions(MainActivity.this,
                         new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
                         1);
 
@@ -79,7 +80,7 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
             }
         } else {
             // Show rationale and request permission.
-            ActivityCompat.requestPermissions(MapsActivity.this,
+            ActivityCompat.requestPermissions(MainActivity.this,
                     new String[]{Manifest.permission.ACCESS_FINE_LOCATION},
                     1);
         }
@@ -136,14 +137,14 @@ public class MapsActivity extends FragmentActivity implements OnMapReadyCallback
                 }
 
 
-//                Toast.makeText(MapsActivity.this, String.format(Locale.US, "%d pokemons found", pokemons.size()), Toast.LENGTH_SHORT).show();
+//                Toast.makeText(MainActivity.this, String.format(Locale.US, "%d pokemons found", pokemons.size()), Toast.LENGTH_SHORT).show();
 
             }
 
             @Override
             public void onFailure(Call<SubmissionBody> call, Throwable t) {
                 setLoading(false);
-                Toast.makeText(MapsActivity.this, "Something went wrong, Try again.", Toast.LENGTH_SHORT).show();
+                Toast.makeText(MainActivity.this, "Something went wrong, Try again.", Toast.LENGTH_SHORT).show();
             }
         });
     }

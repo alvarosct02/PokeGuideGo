@@ -1,4 +1,4 @@
 <resources>
     <string name="app_name">PokeGuideGo</string>
-    <string name="title_activity_maps">Map</string>
+    <string name="title_activity_main">TKPokeMap</string>
 </resources>
